@@ -1,0 +1,23 @@
+{
+    "name": "samir.keriou/random-gift",
+    "description": "Cadeau random",
+    "version": "1.0.0",
+    "require": {
+        "symfony/console": "^5.4",
+        "symfony/var-dumper": "^5.4",
+        "symfony/yaml": "^5.4",
+        "symfony/mailer": "^5.4"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "KERIOU Samir",
+            "email": "samir.keriou@gendarmerie.interieur.gouv.fr"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "RandomGift\\": "./"
+        }
+    }
+}

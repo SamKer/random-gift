@@ -1,0 +1,9 @@
+mailer_dsn: "smtp://login:password@smtp-server:port"
+mailer_admin: "mail_admin"
+
+#montant max
+gift_max: "15 €"
+
+attendees:
+# list destinataire
+  - { name: "Moi", mail: "mon mail@" }

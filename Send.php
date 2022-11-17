@@ -41,7 +41,9 @@ class Send extends Command {
 
         $ids = array_keys($conf['attendees']);
         $idsTaken = [];
-        $users = array_map(function($k,$v) use ($ids, &$idsTaken, $conf) {
+        $users = array_map(/**
+         * @throws \Exception
+         */ function($k, $v) use ($ids, &$idsTaken, $conf) {
             $v['id'] = $k;
             //randomize
             $toId = null;

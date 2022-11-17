@@ -4,6 +4,9 @@ mailer_admin: "mail_admin"
 #montant max
 gift_max: "15 €"
 
+text_prepare: "mail de preparation"
+text_go: "mail effectif"
+
 attendees:
 # list destinataire
-  - { name: "Moi", mail: "mon mail@" }
+  - { name: "Moi", mail: "mon mail@" , test: true }

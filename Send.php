@@ -15,16 +15,15 @@ use Symfony\Component\Mailer\Transport\Smtp\SmtpTransport;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Yaml\Yaml;
 
-class Send extends Command {
-
+class Send extends Command
+{
 
 
     public function configure()
     {
-         $this->setName("run")
-		->setDescription('envoi un check')
-		->addOption("test", "t",  InputOption::VALUE_OPTIONAL, "mode test")
-             ;
+        $this->setName("run")
+            ->setDescription('envoi un check')
+            ->addOption("test", "t", InputOption::VALUE_OPTIONAL, "mode test");
     }
 
     public function execute(InputInterface $input, OutputInterface $output)
@@ -40,15 +39,20 @@ class Send extends Command {
         $conf = Yaml::parse(file_get_contents(PROJECT_CONFIG));
 
         $ids = array_keys($conf['attendees']);
+        if(count($conf['attendees']) < 2) {
+            $io->error("there is only one mail the list, useless?", SymfonyStyle::OUTPUT_NORMAL);
+            return 0;
+        }
+
         $idsTaken = [];
-        $users = array_map(function($k,$v) use ($ids, &$idsTaken, $conf) {
+        $users = array_map(function ($k, $v) use ($ids, &$idsTaken, $conf) {
             $v['id'] = $k;
             //randomize
             $toId = null;
             while ($toId === null) {
-                $rand  = random_int(0, count($ids)-1);
+                $rand = random_int(0, count($ids) - 1);
                 $id = $ids[$rand];
-                if($id !== $k && !in_array($id, $idsTaken)) {
+                if ($id !== $k && !in_array($id, $idsTaken)) {
                     $toId = $id;
                     $idsTaken[] = $toId;
                 }
@@ -56,16 +60,16 @@ class Send extends Command {
             $v['gift_to'] = $conf['attendees'][$toId];
             return $v;
         },
-        array_keys($conf['attendees']),
-        $conf['attendees']
-    );
+            array_keys($conf['attendees']),
+            $conf['attendees']
+        );
 
 
-try {
 
+        try {
 
-    foreach ($users as $i => $user) {
-        $message = "<div style=''>
+            foreach ($users as $i => $user) {
+                $message = "<div style=''>
 <h3>Random Gift:</h3>
     <div>
         <p>Random gift a lancé les dés:</p>
@@ -74,28 +78,28 @@ try {
         <p>Cordialement, Joyeux Noël</p>
     </div>
 </div>";
-        $message = sprintf($message, $user['gift_to']['name'], $conf['gift_max']);
-        //send
-        if($modeTest === null) {
-            $transport = Transport::fromDsn($conf['mailer_dsn']);
-            $mailer = new Mailer($transport);
-            $email = new Email();
-            $email->from($conf['mailer_admin']);
-            $email->to($user['mail']);
-            $email->subject("Random Gift Loto :: LE VRAI TIRAGE");
-            $email->html($message);
-            $mailer->send($email);
-            $io->writeln("mail sending to " . $user['mail']);
-            sleep(2);
+                $message = sprintf($message, $user['gift_to']['name'], $conf['gift_max']);
+                //send
+                if ($modeTest === null) {
+                    $transport = Transport::fromDsn($conf['mailer_dsn']);
+                    $mailer = new Mailer($transport);
+                    $email = new Email();
+                    $email->from($conf['mailer_admin']);
+                    $email->to($user['mail']);
+                    $email->subject("Random Gift Loto :: LE VRAI TIRAGE");
+                    $email->html($message);
+                    $mailer->send($email);
+                    $io->writeln("mail sending to " . $user['mail']);
+                    sleep(2);
+                }
+            }
+
+            //sauvegarde local
+            file_put_contents(PROJECT_DIR . "/var/gift_" . (new \DateTime())->format("YmdHis") . ".txt", json_encode($users, JSON_PRETTY_PRINT));
+
+        } catch (TransportException $e) {
+            $io->error($e->getMessage());
         }
-    }
-
-    //sauvegarde local
-    file_put_contents(PROJECT_DIR . "/var/gift_". (new \DateTime())->format("YmdHis").".txt", json_encode($users, JSON_PRETTY_PRINT));
-
-} catch(TransportException $e) {
-    $io->error($e->getMessage());
-}
         return 0;
     }
 }

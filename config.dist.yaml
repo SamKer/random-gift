@@ -1,0 +1,15 @@
+# Conf mailing
+mailer_dsn: "smtp://login:password@smtp-server:port"
+mailer_admin: "mail_admin"
+
+#montant max
+gift_max: "15 €"
+
+# les text contenu en mail (peut etre du html)
+text_prepare: "<div>votre contenu du mail de preparation( doit contenir un %s pour le remplacement du montent prévu max)</div>"
+text_go: "<div>votre contenu du mail effectif (doit contenir 2 %s: le premier pour le nom du destinataire du mail, le second pour le montant)</div>"
+
+
+attendees:
+# liste des destinataires, ceux possédant l'attribut test: true reçoivent le mail en mode test
+  - { name: "Moi", mail: "mon mail@" , test: true }
